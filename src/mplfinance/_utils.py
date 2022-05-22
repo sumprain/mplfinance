@@ -1496,6 +1496,8 @@ def _construct_tline_collections(tlines, dtix, dates, opens, highs, lows, closes
 
     return _construct_aline_collections(alines, dtix)
 
+def _construct_pline_collections(plines, dtix, dates, opens, highs, lows, closes):
+    pass
 
 from matplotlib.ticker import Formatter
 class IntegerIndexDateTimeFormatter(Formatter):

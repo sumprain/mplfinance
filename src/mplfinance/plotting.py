@@ -20,6 +20,7 @@ from mplfinance._utils import _construct_aline_collections
 from mplfinance._utils import _construct_hline_collections
 from mplfinance._utils import _construct_vline_collections
 from mplfinance._utils import _construct_tline_collections
+from mplfinance._utils import _construct_pline_collections
 from mplfinance._utils import _construct_mpf_collections
 
 from mplfinance._widths import _determine_width_config
@@ -36,7 +37,7 @@ from mplfinance._arg_validators import _get_valid_plot_types
 from mplfinance._arg_validators import _process_kwargs, _validate_vkwargs_dict
 from mplfinance._arg_validators import _kwarg_not_implemented, _bypass_kwarg_validation
 from mplfinance._arg_validators import _hlines_validator, _vlines_validator
-from mplfinance._arg_validators import _alines_validator, _tlines_validator
+from mplfinance._arg_validators import _alines_validator, _tlines_validator, _plines_validator
 from mplfinance._arg_validators import _scale_padding_validator, _yscale_validator
 from mplfinance._arg_validators import _valid_panel_id, _check_for_external_axes
 from mplfinance._arg_validators import _xlim_validator, _mco_validator, _is_marketcolor_object
@@ -265,6 +266,19 @@ def _valid_plot_kwargs():
                                                         ' `colors`, `linestyle`, `linewidths`, `alpha`, `tline_use`,`tline_method`.',
                                         'Validator'   : lambda value: _tlines_validator(value) },
        
+        'plines'                    : { 'Default'     : None, 
+                                        'Description' : 'Draw one or more parallel trend line by specifying a'+
+                                                        ' pair of date[times]'+
+                                                        ' between which the trend line is to be drawn and another date[time]'+
+                                                        ' through which parallel line to the trend line passes'+
+                                                        '`(((dt1_1, dt2_1), dt3_1), ((dt1_2, dt2_2), dt3_2), ...)`.'+
+                                                        ' May also be a dict with `plines` as just described'+
+                                                        ' , plus one or more of the following keys:'+
+                                                        ' `colors`, `linestyle`, `linewidths`, `alpha`, `tline_use`,'+
+                                                        ' `tline_method`. The structure of the keys is ((key12_1, key3_1),'+
+                                                        ' (key12_2, key3_2), ...)', 
+                                        'Validator'   : lambda value: _plines_validator(value) },
+
         'panel_ratios'              : { 'Default'     : None,
                                         'Description' : 'sequence of numbers indicating relative sizes of panels; sequence len'+
                                                         ' must be same as number of panels, or len 2 where first entry is for'+
@@ -600,6 +614,15 @@ def plot( data, **kwargs ):
     line_collections.append(_construct_aline_collections(config['alines'], dtix))
     line_collections.append(_construct_hline_collections(config['hlines'], minx, maxx))
     line_collections.append(_construct_vline_collections(config['vlines'], dtix, miny, maxy))
+    
+    plines = config['plines']
+    if isinstance(plines, (list, tuple)) and all([isinstance(item, dict) for item in plines]):
+        pass
+    else:
+        plines = [plines, ]
+    for pline_item in plines:
+        line_collections.append(_construct_pline_collections(pline_item, dtix, dates, opens, highs, lows, closes))
+    
     tlines = config['tlines']
     if isinstance(tlines,(list,tuple)) and all([isinstance(item,dict) for item in tlines]):
         pass

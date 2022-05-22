@@ -256,6 +256,9 @@ def _tlines_validator(value):
     else:
         return _tlines_subvalidator(value)
 
+def _plines_validator (value):
+    pass
+
 def _bypass_kwarg_validation(value):
     ''' For some kwargs, we either don't know enough, or
         the validation is too complex to make it worth while,
